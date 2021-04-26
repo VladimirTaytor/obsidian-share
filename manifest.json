@@ -1,10 +1,10 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-google-docs-share",
+	"name": "Google Docs Share",
 	"version": "1.0.1",
 	"minAppVersion": "0.9.12",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md/about",
+	"description": "This is a plugin to export your notes into Google Docs.",
+	"author": "Volodymyr Pihol",
+	"authorUrl": "https://github.com/VladimirTaytor",
 	"isDesktopOnly": false
 }

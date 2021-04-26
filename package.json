@@ -1,14 +1,19 @@
 {
-  "name": "obsidian-sample-plugin",
+  "name": "obsidian-google-docs-share",
   "version": "0.12.0",
-  "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
-  "main": "main.js",
+  "description": "This is a plugin to export your notes into Google Docs",
+  "main": "src/main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js --environment BUILD:production"
+    "build": "rollup --config rollup.config.js --environment BUILD:production",
+    "build:dev": "node bin/build-plugin.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "export",
+    "share",
+    "Google Docs"
+  ],
+  "author": "Volodymyr Pihol",
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^18.0.0",

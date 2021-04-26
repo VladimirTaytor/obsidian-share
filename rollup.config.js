@@ -1,6 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import mv from "rollup-plugin-mv";
 
 const isProd = (process.env.BUILD === 'production');
 
@@ -12,9 +13,9 @@ if you want to view the source visit the plugins github repository
 `;
 
 export default {
-  input: 'main.ts',
+  input: 'src/main.ts',
   output: {
-    dir: '.',
+    dir: 'build',
     sourcemap: 'inline',
     sourcemapExcludeSources: isProd,
     format: 'cjs',
@@ -25,6 +26,6 @@ export default {
   plugins: [
     typescript(),
     nodeResolve({browser: true}),
-    commonjs(),
+    commonjs()
   ]
 };
