@@ -1,4 +1,11 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import {
+	App,
+	Modal,
+	Plugin,
+	PluginSettingTab,
+	Setting,
+	TFile
+} from 'obsidian';
 
 interface MyPluginSettings {
 	mySetting: string;
@@ -8,53 +15,39 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
+export default class ObsidianShare extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
-		console.log('loading plugin');
-
 		await this.loadSettings();
 
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
-			new Notice('This is a notice!');
+		this.addRibbonIcon('dice', 'Share Document', async () => {
+			const link = await this.shareDocument()
+			new ResultModal(this.app, link).open()
 		});
 
-		this.addStatusBarItem().setText('Status Bar Text');
+		this.addSettingTab(new ObsidianShareSettingTab(this.app, this));
+	}
 
-		this.addCommand({
-			id: 'open-sample-modal',
-			name: 'Open Sample Modal',
-			// callback: () => {
-			// 	console.log('Simple Callback');
-			// },
-			checkCallback: (checking: boolean) => {
-				let leaf = this.app.workspace.activeLeaf;
-				if (leaf) {
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-					return true;
-				}
-				return false;
-			}
-		});
+	async shareDocument() {
+		const activeFile = this.getActiveFile()
+		const fileData = await this.readFileData(activeFile)
 
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		console.log(fileData)
 
-		this.registerCodeMirror((cm: CodeMirror.Editor) => {
-			console.log('codemirror', cm);
-		});
-
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		return 'link'
 	}
 
 	onunload() {
 		console.log('unloading plugin');
+	}
+
+	getActiveFile() {
+		return this.app.workspace.getActiveFile()
+	}
+
+	async readFileData(file: TFile) {
+		return this.app.vault.read(file)
 	}
 
 	async loadSettings() {
@@ -66,14 +59,17 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
+class ResultModal extends Modal {
+	link: string
+
+	constructor(app: App, link: string) {
 		super(app);
+		this.link = link
 	}
 
 	onOpen() {
 		let {contentEl} = this;
-		contentEl.setText('Woah!');
+		contentEl.setText(this.link);
 	}
 
 	onClose() {
@@ -82,10 +78,10 @@ class SampleModal extends Modal {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class ObsidianShareSettingTab extends PluginSettingTab {
+	plugin: ObsidianShare;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: ObsidianShare) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
