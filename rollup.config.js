@@ -1,7 +1,8 @@
 import typescript from '@rollup/plugin-typescript';
-import {nodeResolve} from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import mv from "rollup-plugin-mv";
+import json from '@rollup/plugin-json'
+import execute from "rollup-plugin-shell";
 
 const isProd = (process.env.BUILD === 'production');
 
@@ -25,7 +26,9 @@ export default {
   external: ['obsidian'],
   plugins: [
     typescript(),
-    nodeResolve({browser: true}),
-    commonjs()
+    nodeResolve({browser: true, mainFields: ['browser', 'main', 'module']}),
+    commonjs(),
+    json(),
+    execute('npm run build:dev')
   ]
 };
