@@ -1,11 +1,7 @@
-import {
-	App,
-	Modal,
-	Plugin,
-	PluginSettingTab,
-	Setting,
-	TFile
-} from 'obsidian';
+import {App, Modal, Plugin, PluginSettingTab, Setting, TFile} from 'obsidian';
+import ElectronGoogleOAuth2 from "@getstation/electron-google-oauth2";
+
+const SCOPES = ['https://www.googleapis.com/auth/documents']
 
 interface MyPluginSettings {
 	mySetting: string;
@@ -29,13 +25,51 @@ export default class ObsidianShare extends Plugin {
 		this.addSettingTab(new ObsidianShareSettingTab(this.app, this));
 	}
 
+	async createDocument({ title, token, data }: {title: string, token: string, data: string}) {
+		console.log(title, token)
+		console.log(data)
+
+		let requestBody = {
+			title: title
+		};
+
+		let response = await fetch('https://docs.googleapis.com/v1/documents?access_token=${token}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			},
+			body: JSON.stringify(requestBody)
+		});
+
+		let result = await response.json();
+
+		return result.data
+	}
+
 	async shareDocument() {
 		const activeFile = this.getActiveFile()
-		const fileData = await this.readFileData(activeFile)
+		const data = await this.readFileData(activeFile)
+		const token = await this.login()
+		const title = activeFile.basename
 
-		console.log(fileData)
+		const result = await this.createDocument({ data, title, token})
+
+		console.log(result)
+
 
 		return 'link'
+	}
+
+	async login() {
+		const api = new ElectronGoogleOAuth2(
+			'CLIENT_ID',
+			'CLIENT_SECRET',
+			SCOPES
+		);
+
+		const credentials = await api.openAuthWindowAndGetTokens()
+
+		return credentials.access_token
 	}
 
 	onunload() {
@@ -58,6 +92,7 @@ export default class ObsidianShare extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
+
 
 class ResultModal extends Modal {
 	link: string
